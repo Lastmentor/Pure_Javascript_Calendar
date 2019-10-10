@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Park-Net Yazılım Kod Mülakat Sorusu</title>
+    <style>
+        .table td, .table th {
+            padding: 0rem;      
+            background-color: #C6E0B4;      
+        }
+        .table-bordered thead td, .table-bordered thead th {
+            border-bottom-width: 2px;
+            background-color: #BDD7EE;
+            font-weight: normal;
+        }
+        table.table-bordered{
+            border:1px solid black;    
+        }
+        table.table-bordered > thead > tr > th{
+            border:1px solid black;
+        }
+        table.table-bordered > tbody > tr > td{
+            border:1px solid black;
+        }       
+    </style>        
+  </head>
+  <body>
+    <div class="card">                           
+        <h3 class="card-header text-center" id="monthAndYear"></h3>                
+    </div>    
+    <div class="table-responsive">
+      <table class="table table-bordered" width="100%" cellspacing="0">
+          <thead>
+              <tr class="text-center">
+                <th>Pazartesi</th>
+                <th>Salı</th>
+                <th>Çarşamba</th>
+                <th>Perşembe</th>
+                <th>Cuma</th>
+                <th>Cumartesi</th>
+                <th>Pazar</th>
+              </tr>
+          </thead>
+          <tbody id="calendar-body"></tbody>
+      </table>        
+    </div> 
+    <div class="text-center">            
+            <button class="btn btn-outline-primary col-sm-2" id="previous" onclick="previous()">
+                <i class="fa fa-arrow-left"></i>
+            </button>
+            <button class="btn btn-outline-primary col-sm-2" id="next" onclick="next()">
+                <i class="fa fa-arrow-right"></i>
+            </button>
+        </div>
+    <script>     
+        var data = [
+            {"title":"event 1", "date":"2014/09/25"},
+            {"title":"event 2", "date":"2014/09/26", "enddate":"2014/09/29"},
+            {"title":"event 3", "date":"2014/09/27"},
+            {"title":"event 4", "date":"2014/09/30"}
+        ]; 
+        var today = new Date('2014-09-01 00:00');    
+        var todayNew = new Date();     
+
+        currentMonth = today.getMonth();      
+        currentYear = today.getFullYear();
+
+        months = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];   
+
+        showCalendar(currentMonth, currentYear);
+
+        function next() {
+            currentYear = (currentMonth === 11) ? currentYear + 1 : currentYear;
+            currentMonth = (currentMonth + 1) % 12;
+            showCalendar(currentMonth, currentYear);
+        }
+
+        function previous() {
+            currentYear = (currentMonth === 0) ? currentYear - 1 : currentYear;
+            currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
+            showCalendar(currentMonth, currentYear);
+        }
+
+        function showCalendar(month, year) {        
+
+        let firstDay = (new Date(year, month)).getDay() - 1;        
+
+        tbl = document.getElementById("calendar-body");        
+        tbl.innerHTML = "";
+        
+        document.getElementById("monthAndYear").innerHTML = months[month] + " " + year;        
+        
+        let date = 1;
+        let dateEvent = 0;
+        for (let i = 0; i < 6; i++) {            
+            let row = document.createElement("tr");                        
+            for (let j = 0; j < 7; j++) {
+                if (i === 0 && j < firstDay) {
+                    var cell = document.createElement("td");                 
+                    cell.style.height = "100px";        
+                    cell.style.width = "100px";
+                    cell.style.verticalAlign = "bottom";
+                    cell.style.textAlign = "center";                               
+                    cellText = document.createTextNode("");
+                    cell.appendChild(cellText);
+                    row.appendChild(cell);
+                }
+                else if (date > daysInMonth(month, year)) {
+                    break;
+                }
+                else {                    
+                    var dayNew = new Date(data[dateEvent]['date']).getDate();
+                    var monthNew = new Date(data[dateEvent]['date']).getMonth();
+                    var yearNew = new Date(data[dateEvent]['date']).getFullYear(); 
+
+                    var dayEndEvent, monthEndEvent, yearEndEvent;
+                    var endDayEventCheck;                                                       
+
+                    var cell = document.createElement("td");
+                    cell.style.height = "100px"; 
+                    cell.style.width = "100px";
+
+                    var datediv = document.createElement("div");
+                    datediv.style.textAlign = "center";                         
+                    datediv.style.paddingTop = "75px"; 
+
+                    var cellText = document.createTextNode(date); 
+                    datediv.appendChild(cellText);    
+                                        
+                    if(date === endDayEventCheck && endDayEventCheck <= dayEndEvent){
+                        console.log("dayEndEvent : " + dayEndEvent);
+                        var spanEvent = document.createElement("div");                                          
+                        spanEvent.style.backgroundColor = "#4472C4";
+                        spanEvent.style.marginTop = "10px";  
+
+                        cellTextEndEvent = document.createTextNode('\u00A0');
+                        spanEvent.appendChild(cellTextEndEvent);       
+                        cell.appendChild(spanEvent);
+                                              
+                        endDayEventCheck++;  
+                        console.log("endDayEventCheck : " + endDayEventCheck);
+                    } 
+                    if(date === dayNew && year === yearNew && month === monthNew){                        
+                        console.log("Girdi" + date);
+                        var checkEvents = 0;
+                        for(var k = 0; k < data.length; k++){
+                            dayNew2 = new Date(data[k]['date']).getDate();
+                            monthNew2 = new Date(data[k]['date']).getMonth();
+                            yearNew2 = new Date(data[k]['date']).getFullYear();
+                            var endEvent = data[k]['enddate'] ? new Date(data[dateEvent]['enddate']) : false;  
+
+                            if(date === dayNew2 && year === yearNew2 && month === monthNew2){ 
+                                checkEvents++;                                
+                                console.log(date);                                
+                                var span = document.createElement("div");
+                                span.style.color = "white";
+                                span.style.backgroundColor = "#4472C4";
+                                span.style.marginTop = "10px";                                                   
+
+                                cellTextEvent = document.createTextNode(data[k]['title']);
+                                span.appendChild(cellTextEvent);       
+                                cell.appendChild(span);   
+
+                                // END EVENT KONTROL DURUMU
+                                if(endEvent !== false){
+                                    console.log("End Date Var!");
+                                    dayEndEvent = endEvent.getDate();
+                                    monthEndEvent = endEvent.getMonth();
+                                    yearEndEvent = endEvent.getFullYear();
+                                    console.log(dayEndEvent + " " + monthEndEvent + " " + yearEndEvent); 
+                                    endDayEventCheck = date + 1;  
+                                    console.log("endDayEventCheck :" + endDayEventCheck);                                 
+                                }                                                                                                
+                            }else{
+                                console.log("Girmedi");
+                            }
+                            // AYNI GÜNDE 1'DEN FAZLA EVENT OLMA DURUMU
+                            if(checkEvents > 1 && k == data.length - 1){
+                                dateEvent++;
+                            }                            
+                        } 
+                        dateEvent++; 
+                        datediv.style.paddingTop = "40px";                                                                      
+                    }                                                                                                           
+                    if(date === todayNew.getDate() && year === todayNew.getFullYear() && month ===todayNew.getMonth()) {                        
+                        cell.classList.add("bg-success");                        
+                    }                    
+                    cell.appendChild(datediv);
+                    row.appendChild(cell);
+                    date++;
+                                       
+                }
+                }
+                tbl.appendChild(row);
+            }            
+        }
+
+        function daysInMonth(iMonth, iYear) {
+            return 32 - new Date(iYear, iMonth, 32).getDate();
+        }
+    </script>      
+  </body>
+</html>
